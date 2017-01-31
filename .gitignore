@@ -8,5 +8,7 @@
 target/classes
 target/messages
 target/maven-status
+target/generated-sources/
 out
 gen
+src/test/
