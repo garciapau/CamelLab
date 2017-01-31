@@ -7,5 +7,6 @@
 *.iml
 target/classes
 target/messages
+target/maven-status
 out
 gen
