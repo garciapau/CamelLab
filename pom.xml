@@ -95,7 +95,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Hawtio dashboard -->
+    <!-- Hawtio embeded -->
     <dependency>
       <groupId>io.hawt</groupId>
       <artifactId>hawtio-embedded</artifactId>
@@ -132,8 +132,9 @@
         <version>2.18.1</version>
       </plugin>
 
-      <!-- Allows the example to be run via 'mvn compile exec:java' -->
+      <!-- Allows the Lab to "manually" be run via 'mvn compile exec:java' -->
       <!-- notice how we have define the mainClass -->
+      <!-- Use Hawtio camel plugin instead -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -157,6 +158,13 @@
           </archive>
         </configuration>
       </plugin>
+
+        <!-- Hawtio camel plugin -->
+        <plugin>
+            <groupId>io.hawt</groupId>
+            <artifactId>hawtio-maven-plugin</artifactId>
+            <version>1.4.68</version>
+        </plugin>
 
     </plugins>
   </build>

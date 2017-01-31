@@ -8,7 +8,9 @@ In this Lab I'm testing Apache Camel as a Content Orchestrator for handling the 
 
 ## How to use it
 git clone https://github.com/garciapau/CamelLab.git
+
 cd CamelLab
+
 mvn compile exec:java
 
 Note: In order to easily access the Hawtio console, you can disable the authentication by adding the following property to the JVM: "-Dhawtio.authenticationEnabled=false"
