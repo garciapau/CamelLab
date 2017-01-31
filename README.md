@@ -12,5 +12,3 @@ git clone https://github.com/garciapau/CamelLab.git
 cd CamelLab
 
 mvn hawtio:camel
-
-Note: In order to easily access the Hawtio console, you can disable the authentication by adding the following property to the JVM: "-Dhawtio.authenticationEnabled=false"
