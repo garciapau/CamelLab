@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Configures the Camel Context-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <import resource="log-setup.xml"/>
+    <import resource="filter-setup.xml"/>
+    <import resource="marshaller-setup.xml"/>
+    <import resource="aws-setup.xml"/>
+
+    <camelContext id="content.acquisition" xmlns="http://camel.apache.org/schema/spring">
+        <!-- here is a sample which processes the input files
+             (leaving them in place - see the 'noop' flag)
+             then performs content based routing on the message using XPath -->
+        <dataFormats>
+            <json id="json" library="Jackson"/>
+            <jaxb id="jaxb" contextPath="content.integration.model"/>
+        </dataFormats>
+        <route id="content.person.acquisition">
+            <from id="GetNewFiles" uri="file:src/data?noop=true"/>
+            <wireTap id="AuditMessage" uri="file:target/messages/audit"/>         <!-- Fire&Forget MEP for auditing purposes -->
+<!--            <wireTap uri="aws-s3://1p-graph/load/archive?region=us-west-2&amp;accessKey=AKIAJKCXXNGWDYGLTRDA&amp;secretKey=RAW(rTuMVlKmO2s74i2ol%2BnkohmM%2Fa5U0%2FaNvCIRYrMM)"/> -->
+<!-- rTuMVlKmO2s74i2ol+nkohmM/a5U0/aNvCIRYrMM   %2B -->
+            <choice id="RouteByFileFormat">
+                <when id="isXML">
+                    <!--          <simple>${body} contains '?xml'</simple> -->
+                    <simple id="XML">${header.CamelFileName} regex '^.*xml$'</simple>
+                    <choice id="isMultiple">
+                        <when id="BULK">
+                            <xpath id="MULTIPLE">count(/attendants/person) > 1</xpath>
+                            <log id="LogMessage" message="Multiple messages"/>
+                            <split id="SplitByPerson" parallelProcessing="true">
+                                <xpath id="SplitByPerson">/attendants/person</xpath>
+                                <setHeader headerName="personName">
+                                    <xpath>/person/firstName/text()</xpath>
+                                </setHeader>
+                                <process  id="LogMessage" ref="logProcessor"></process>
+                                <bean id="EnrichMessage" ref="messageEnrichmentBean"></bean>
+                                <process id="FilterMessage" ref="messageFilter"></process>
+                                <to id="DeliverXML" uri="file:target/messages/xml/person/?fileName=Person_${exchangeId}.xml"/>
+                                <unmarshal id="UnmarshallXML" ref="jaxb"/>
+                                <marshal id="BuildJSON" ref="json"/>
+                                <to id="DeliverJSON" uri="file:target/messages/json/person/?fileName=Person_${exchangeId}.json"/>
+                            </split>
+                        </when>
+                        <otherwise id="SINGLE">
+                            <log id="LogMessage" message="Single message"/>
+                            <to id="DeliverXML" uri="file:target/messages/xml/person"/>
+                        </otherwise>
+                    </choice>
+                </when>
+                <when id="CSV">
+                    <!--          <simple>${body} contains '?xml'</simple> -->
+                    <simple id="isCSV">${header.CamelFileName} regex '^.*csv'</simple>
+                    <log id="LogMessage" message="CSV message"/>
+<!--                //Custom marshaller
+                    <transform>
+                        <method bean="personMarshaller" method="csvToXML"></method>
+                    </transform> -->
+                    <unmarshal id="ParseCSV"><bindy type="Csv" classType="content.integration.model.person"></bindy></unmarshal>
+                    <marshal id="BuildJSON" ref="json"/>
+<!--                // Processor for AWS S3
+                    <process ref="awsProcessor"></process> -->
+                    <!-- AWS S3 client as a Spring bean - method specified although not required -->
+                    <bean id="SendToS3" ref="myAWSClient" method="putFileinS3"></bean>
+                    <!--                    <to uri="file:target/messages/csv2xml"/> -->
+                </when>
+                <otherwise id="OTHERWISE">
+                    <log id="LogMessage" message="Text message"/>
+                    <to id="OtherFileFormatNotification" uri="file:target/messages/others"/>
+                </otherwise>
+            </choice>
+
+        </route>
+    </camelContext>
+
+</beans>
