@@ -1,10 +1,12 @@
 content\integration\client\AWSClient.class
-content\integration\marshall\PersonMarshaller.class
+content\integration\model\journal.class
 content\integration\MessageEnrichmentBean.class
-content\integration\model\person.class
 content\integration\client\MyAWSClient.class
+content\integration\aggregation\MyAggregationStrategy.class
 content\integration\CamelMain.class
 content\integration\dashboard\Hawtio.class
 content\integration\processor\LogProcessor.class
+content\integration\model\article.class
 content\integration\filter\MessageFilter.class
+content\integration\marshall\ArticleMarshaller.class
 content\integration\processor\AWSProcessor.class

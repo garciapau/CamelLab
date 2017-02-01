@@ -164,6 +164,11 @@
             <groupId>io.hawt</groupId>
             <artifactId>hawtio-maven-plugin</artifactId>
             <version>1.4.68</version>
+            <configuration>
+                <openWebConsole>false</openWebConsole>
+                <logClasspath>true</logClasspath>
+                <port>8090</port>
+            </configuration>
         </plugin>
 
     </plugins>

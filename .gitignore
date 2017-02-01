@@ -12,3 +12,4 @@ target/generated-sources/
 out
 gen
 src/test/
+default.properties

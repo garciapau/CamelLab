@@ -10,13 +10,13 @@ public class MessageFilter implements Processor {
 
     public void process(Exchange exchange) throws Exception {
         System.out.println("Filtering file: "
-                + exchange.getIn().getHeader("CamelFileName")
+                + exchange.getIn().getHeader("ArticleTitle")
         );
-        String name = exchange.getIn().getHeader("personName", String.class);
-        if ("pau".equalsIgnoreCase(name)) {
+        String name = exchange.getIn().getHeader("ArticleTitle", String.class);
+        if ("Emerging Sources".equalsIgnoreCase(name)) {
             exchange.getOut().setFault(true);
-            System.out.println("--> Message discarded for person: "
-                    + exchange.getIn().getHeader("personName", String.class)
+            System.out.println("--> Article discarded : "
+                    + exchange.getIn().getHeader("ArticleTitle", String.class)
             );
         }
     }

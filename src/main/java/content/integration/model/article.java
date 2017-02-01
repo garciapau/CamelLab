@@ -9,17 +9,20 @@ import org.apache.camel.dataformat.bindy.annotation.DataField;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @CsvRecord(separator = ",", crlf = "UNIX")
-public class person {
+public class article {
     @XmlAttribute
     @DataField(pos = 1)
-    private String user;
-    @XmlElement
+    private String journalId;
+    @XmlAttribute
     @DataField(pos = 2)
-    private String firstName;
+    private String title;
     @XmlElement
     @DataField(pos = 3)
-    private String lastName;
+    private String category;
     @XmlElement
     @DataField(pos = 4)
+    private String author;
+    @XmlElement
+    @DataField(pos = 5)
     private String city;
 }

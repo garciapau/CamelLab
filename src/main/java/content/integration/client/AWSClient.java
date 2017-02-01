@@ -8,4 +8,6 @@ import org.apache.camel.Exchange;
 public interface AWSClient {
 
     public void putFileinS3(Exchange exchange) throws Exception;
+
+    public void putMessageInSQS(Exchange exchange) throws Exception;
 }

@@ -1,4 +1,3 @@
-user,firstName,lastName,city
-james,James,Strachan,London
-pau,Pau,Strachan,London
-david,David,Strachan,London
+journalId,title,category,author,city
+0000001,3 Neurological surgery,Cells,Orson Scott Card,Lusitania
+0000001,3 Emerging Sources,Pharmaceutics,Isaac Asimov,Terminus

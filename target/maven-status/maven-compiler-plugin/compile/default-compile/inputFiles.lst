@@ -1,10 +1,12 @@
-C:\Workspace\Playground\CamelLab\src\main\java\content\integration\marshall\PersonMarshaller.java
 C:\Workspace\Playground\CamelLab\src\main\java\content\integration\processor\AWSProcessor.java
+C:\Workspace\Playground\CamelLab\src\main\java\content\integration\aggregation\MyAggregationStrategy.java
+C:\Workspace\Playground\CamelLab\src\main\java\content\integration\model\journal.java
 C:\Workspace\Playground\CamelLab\src\main\java\content\integration\CamelMain.java
 C:\Workspace\Playground\CamelLab\src\main\java\content\integration\filter\MessageFilter.java
-C:\Workspace\Playground\CamelLab\src\main\java\content\integration\model\person.java
 C:\Workspace\Playground\CamelLab\src\main\java\content\integration\client\AWSClient.java
 C:\Workspace\Playground\CamelLab\src\main\java\content\integration\client\MyAWSClient.java
 C:\Workspace\Playground\CamelLab\src\main\java\content\integration\dashboard\Hawtio.java
 C:\Workspace\Playground\CamelLab\src\main\java\content\integration\MessageEnrichmentBean.java
 C:\Workspace\Playground\CamelLab\src\main\java\content\integration\processor\LogProcessor.java
+C:\Workspace\Playground\CamelLab\src\main\java\content\integration\marshall\ArticleMarshaller.java
+C:\Workspace\Playground\CamelLab\src\main\java\content\integration\model\article.java
