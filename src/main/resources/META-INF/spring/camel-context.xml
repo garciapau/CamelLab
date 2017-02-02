@@ -56,9 +56,9 @@
                             <xpath id="MULTIPLE">count(/Journal/article) > 1</xpath>
                             <split id="SplitByArticle" parallelProcessing="true">
                                 <xpath id="SplitByPerson">/Journal/article</xpath>
-                                <setProperty propertyName="Title">
+                                <setHeader headerName="ArticleTitle">
                                     <xpath>/article/@title</xpath>
-                                </setProperty>
+                                </setHeader>
 <!--                                <process id="LogMessage" ref="logProcessor"></process> -->
                                 <bean id="EnrichMessage" ref="messageEnrichmentBean" method="addJournalId"></bean>
                                 <process id="FilterMessage" ref="messageFilter"></process>
