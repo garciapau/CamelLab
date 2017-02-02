@@ -5,10 +5,7 @@
 # IntelliJ project files
 .idea
 *.iml
-target/classes
-target/messages
-target/maven-status
-target/generated-sources/
+target/*
 out
 gen
 src/test/
