@@ -38,12 +38,6 @@
       <artifactId>camel-spring</artifactId>
     </dependency>
 
-    <!-- Add support for JAXB marshaling -->
-    <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-jaxb</artifactId>
-    </dependency>
-
     <!-- Add support for AWS -->
     <dependency>
       <groupId>org.apache.camel</groupId>
