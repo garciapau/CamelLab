@@ -35,14 +35,14 @@
     <bean id="myAggregationStrategy" class="content.integration.aggregation.MyAggregationStrategy"/>
 
     <camelContext id="content.journal" xmlns="http://camel.apache.org/schema/spring">
-        <!-- here is a sample which processes the input files
-             (leaving them in place - see the 'noop' flag)
-             then performs content based routing on the message using XPath -->
+        <endpoint id="traced" uri="jpa://org.apache.camel.processor.interceptor.JpaTraceEventMessage?persistenceUnit=tracer"/>
         <dataFormats>
             <json id="json" library="Jackson"/>
             <jaxb id="jaxb" contextPath="content.integration.model"/>
         </dataFormats>
-
+    <!-- <intercept>
+            <to uri="log:hello"/>
+        </intercept> -->
         <route id="content.journal.acquisition">
             <from id="GetNewFiles" uri="file:src/data?noop=true"/>
             <setHeader id="setS3ArchiveKey" headerName="CamelAwsS3Key"><simple>load/archive/${header.CamelFileName}</simple></setHeader>
@@ -106,4 +106,31 @@
             </aggregate>
         </route>
     </camelContext>
+
+    <!-- use camel jpa trace so we can see all the traced exchanges in a database -->
+    <bean id="camelTracer" class="org.apache.camel.processor.interceptor.Tracer">
+        <!-- turn on jpa tracing, otherwise the TraceEventMessage is a non JPA Entity class -->
+        <property name="useJpa" value="true"/>
+        <!-- the destination to send the traced messages -->
+        <property name="destination" ref="traced"/>
+        <!-- we turn ordinary trace logging off so we only see the traced messages in the database,
+             but you can have both if you like -->
+        <property name="logLevel" value="OFF"/>
+    </bean>
+
+    <!-- this is ordinary JPA spring configuration -->
+    <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+        <property name="transactionManager">
+            <bean class="org.springframework.orm.jpa.JpaTransactionManager">
+                <property name="entityManagerFactory" ref="entityManagerFactory"/>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- this is ordinary JPA spring configuration -->
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
+        <!-- we have named our presistence unit tracer in the META-INF/persistence.xml file -->
+        <property name="persistenceUnitName" value="tracer"/>
+    </bean>
+
 </beans>
