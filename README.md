@@ -18,8 +18,8 @@ that communicate through SQS in an asynchronous way.
 Improvement. Instead of keeping it in  memory, Camel stores the instances history into a non-embedded Apache Derby database.
 More info at http://camel.apache.org/tracer-example.html
 
-First install Derby and an instance at: jdbc:derby://localhost/C:/Workspace/Playground/CamelLab/target/derby
-You can change that URI by opening the file C:\Workspace\Playground\CamelLab\src\main\resources\META-INF\persistence.xml
+First install Derby and an instance at: jdbc:derby://localhost/<Workspace>/CamelLab/target/derby
+You can set Derby's database URI updating the file <Workspace>\CamelLab\src\main\resources\META-INF\persistence.xml
 
 Then start Derby server:
 <db-derby-home>\bin>NetworkServerControl start
