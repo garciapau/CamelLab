@@ -14,6 +14,18 @@ There are 2 routes:
 * content.journal.curation
 that communicate through SQS in an asynchronous way.
 
+## Tracking instances - Database Persistence
+Improvement. Instead of keeping it in  memory, Camel stores the instances history into a non-embedded Apache Derby database.
+More info at http://camel.apache.org/tracer-example.html
+
+First install Derby and an instance at: jdbc:derby://localhost/C:/Workspace/Playground/CamelLab/target/derby
+You can change that URI by opening the file C:\Workspace\Playground\CamelLab\src\main\resources\META-INF\persistence.xml
+
+Then start Derby server:
+<db-derby-home>\bin>NetworkServerControl start
+
+To explode the content, SQuirreL (https://db.apache.org/derby/integrate/SQuirreL_Derby.html) can be easily configured as an SQL client.
+
 ## How to use it
 git clone https://github.com/garciapau/CamelLab.git
 
