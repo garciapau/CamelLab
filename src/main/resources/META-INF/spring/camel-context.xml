@@ -54,53 +54,51 @@
                         <when id="BULK">
                             <xpath id="MULTIPLE">count(/Journal/article) > 1</xpath>
                             <split id="SplitByArticle" parallelProcessing="true">
-                                <xpath id="SplitByPerson">/Journal/article</xpath>
+                                <xpath id="SplitByArticle">/Journal/article</xpath>
                                 <setHeader id="setArticleTitle" headerName="ArticleTitle">
                                     <xpath>/article/@title</xpath>
                                 </setHeader>
-<!--                                <process id="LogMessage" ref="logProcessor"></process> -->
                                 <bean id="EnrichMessage" ref="messageEnrichmentBean" method="addJournalId"></bean>
                                 <process id="FilterMessage" ref="messageFilter"></process>
                                 <removeHeader id="removeHeader" headerName="ArticleTitle"></removeHeader>
-                                <log id="LogMessage" message="Sending each article to SQS Message Queue"/>
-                                <to id="DeliverJSON" uri="aws-sqs://arn:aws:sqs:us-west-2:509786517216:WorkflowTasksQueue?amazonSQSClient=#sqsClient"></to>
+                                <log id="LogMessage" message="Sending each article from the multiple XML to SQS Message Queue"/>
+                                <to id="DeliverXMLArticles" uri="aws-sqs://arn:aws:sqs:us-west-2:509786517216:WorkflowTasksQueue?amazonSQSClient=#sqsClient"></to>
                             </split>
                         </when>
                         <otherwise id="SINGLE">
-                            <log id="LogMessage" message="Sending single message to SQS Message Queue"/>
+                            <log id="LogMessage" message="Sending the single XML message to SQS Message Queue"/>
                             <bean id="EnrichMessage" ref="messageEnrichmentBean" method="addJournalId"></bean>
-                            <to id="DeliverXML" uri="aws-sqs://arn:aws:sqs:us-west-2:509786517216:WorkflowTasksQueue?amazonSQSClient=#sqsClient"></to>
+                            <to id="DeliverXMLArticle" uri="aws-sqs://arn:aws:sqs:us-west-2:509786517216:WorkflowTasksQueue?amazonSQSClient=#sqsClient"></to>
                         </otherwise>
                     </choice>
                 </when>
                 <when id="CSV">
                     <simple id="isCSV">${header.CamelFileName} regex '^.*csv'</simple>
-                    <!-- //Custom marshaller <transform>
-                        <method bean="ArticleMarshaller" method="csvToXML"></method>
-                    </transform> -->
+                    <!-- //Custom marshaller <transform><method bean="ArticleMarshaller" method="csvToXML"></method></transform> -->
                     <unmarshal id="ParseCSV"><bindy type="Csv" classType="content.integration.model.article"></bindy></unmarshal>
-                    <marshal id="BuildJSON" ref="json"/>
-                    <!-- AWS S3 client as a Spring bean - method specified although not required
-                    <bean id="SendToS3" ref="myAWSClient" method="putFileinS3"></bean> -->
-                    <setHeader id="setS3CSVFileName" headerName="CamelAwsS3Key"><simple>load/article/out/${header.CamelFileName}</simple></setHeader>
-                    <to id="DeliverCSV" uri="aws-s3://1p-graph?amazonS3Client=#s3Client"></to>
+                    <split streaming="true">
+                        <simple>${body}</simple>
+                        <log id="LogMessage" message="Sending single message from CSV to SQS Message Queue"/>
+                        <to id="DeliverCSVArticles" uri="aws-sqs://arn:aws:sqs:us-west-2:509786517216:WorkflowTasksQueue?amazonSQSClient=#sqsClient"></to>
+                    </split>
                 </when>
                 <otherwise id="Unexpected file format">
                     <to id="StoreLocallyOtherFileFormat" uri="file:target/journal/article/others"/>
                 </otherwise>
             </choice>
         </route>
-        <route id="content.journal.curation">
-            <from id="getSQSMessage" uri="aws-sqs://arn:aws:sqs:us-west-2:509786517216:WorkflowTasksQueue?amazonSQSClient=#sqsClient&amp;maxMessagesPerPoll=1"></from>
+        <route id="content.journal.curation" autoStartup="true">
+            <from id="getSQSMessage" uri="aws-sqs://arn:aws:sqs:us-west-2:509786517216:WorkflowTasksQueue?amazonSQSClient=#sqsClient&amp;maxMessagesPerPoll=10"></from>
             <setProperty id="getJournalId" propertyName="journalId"><xpath>/article/@journalId</xpath></setProperty>
-            <aggregate id="AggregateArticles" strategyRef="myAggregationStrategy" completionSize="4">
+            <setHeader id="setBusinessCorrelationId2" headerName="businessCorrelationId"><simple>${exchangeProperty.journalId}</simple></setHeader>
+            <aggregate id="AggregateArticles" strategyRef="myAggregationStrategy" completionTimeout="15000">
                 <correlationExpression>
                     <xpath id="getCorrelationId">/article/@journalId</xpath>
                 </correlationExpression>
                 <bean id="FormatXMLMessage" ref="messageEnrichmentBean" method="addParent"></bean>
                 <unmarshal id="UnmarshallXML" ref="jaxb"/>
                 <marshal id="BuildJSONMessage" ref="json"/>
-                <log id="LogFinalMessage" message="Retrieved 4 articles from the SQS Message Queue and aggregated into a single JSON"/>
+                <log id="LogFinalMessage" message="Journal ${exchangeProperty.journalId}: Retrieved ${exchangeProperty.CamelAggregatedSize} articles from the SQS Message Queue and aggregated into a single JSON in S3 bucket"/>
                 <setHeader id="setS3AggregatedFileName" headerName="CamelAwsS3Key"><simple>load/article/out/${exchangeProperty.journalId}.json</simple></setHeader>
                 <to id="StoreAggregatedJournalinS3" uri="aws-s3://1p-graph?amazonS3Client=#s3Client"></to>
             </aggregate>

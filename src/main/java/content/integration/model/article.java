@@ -8,9 +8,9 @@ import org.apache.camel.dataformat.bindy.annotation.DataField;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@CsvRecord(separator = ",", crlf = "UNIX")
+@CsvRecord(separator = ",", crlf = "UNIX", skipFirstLine = true, name = "article")
 public class article {
-    @XmlAttribute
+    @XmlAttribute(required = false)
     @DataField(pos = 1)
     private String journalId;
     @XmlAttribute

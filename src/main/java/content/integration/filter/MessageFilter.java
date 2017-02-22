@@ -2,22 +2,19 @@ package content.integration.filter;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
-/**
- * Created by u6023035 on 24/01/2017.
- */
 public class MessageFilter implements Processor {
+    private Logger logger = LoggerFactory.getLogger(MessageFilter.class);
 
+    @Override
     public void process(Exchange exchange) throws Exception {
-        System.out.println("Filtering file: "
-                + exchange.getIn().getHeader("ArticleTitle")
-        );
+        logger.info("Filtering file: "+ exchange.getIn().getHeader("ArticleTitle"));
         String name = exchange.getIn().getHeader("ArticleTitle", String.class);
-        if ("Emerging Sources".equalsIgnoreCase(name)) {
+        if ("12 Emerging Sources".equalsIgnoreCase(name)) {
             exchange.getOut().setFault(true);
-            System.out.println("--> Article discarded : "
-                    + exchange.getIn().getHeader("ArticleTitle", String.class)
-            );
+            logger.info("--> Article discarded : " + exchange.getIn().getHeader("ArticleTitle", String.class));
         }
     }
 }

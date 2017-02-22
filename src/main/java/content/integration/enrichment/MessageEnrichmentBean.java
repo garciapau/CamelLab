@@ -1,4 +1,4 @@
-package content.integration;
+package content.integration.enrichment;
 
 public class MessageEnrichmentBean {
 
@@ -7,6 +7,8 @@ public class MessageEnrichmentBean {
     }
 
     public static String addParent(String custom) {
-        return custom.replaceFirst("<article ", "<journal>\n<article ") + "\n</journal>";
+        return custom
+                .replace("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>", "")
+                .replaceFirst("<article ", "<journal>\n<article ") + "\n</journal>";
     }
 }
