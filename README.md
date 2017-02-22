@@ -9,6 +9,7 @@ In this Lab I'm testing Apache Camel as a Content Orchestrator for handling the 
 
 ## Design
 The workflow defined takes journals from an input folder in different file formats (XML, CSV), split those journals into articles to process each one (filter, enrich,etc) and the consolidates all the articles of the same journal into a single JSON file.
+
 There are 2 routes that communicate through SQS in an asynchronous way:
 * content.journal.acquisition
 * content.journal.curation
